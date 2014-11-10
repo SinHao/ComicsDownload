@@ -1,0 +1,165 @@
+﻿<Window x:Class="ComicsDownload.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ComicsDownloadConfig="clr-namespace:ComicsDownload.Class"
+        Title="ComicsDownload" Loaded="Window_Loaded" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Height="350" Width="650" WindowStyle="SingleBorderWindow" Icon="/ComicsDownload;component/favicon%20.ico" Closing="Window_Closing">
+    <Window.Resources>
+        <ComicsDownloadConfig:ComicsConfig x:Key="ComicsDownloadConfig" />
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Menu Grid.Row="0">
+            <MenuItem Header="新增" Click="MenuItem_Click" />
+            <MenuItem Header="開始" Click="btStartClick" />
+            <MenuItem Header="停止" Click="btStopClick" />
+            <MenuItem Header="重新分析" Click="MenuItem_Click_1" />
+            <MenuItem Header="刪除" Click="MenuItem_Click_2" />
+            <MenuItem Header="下載器設定" Click="MenuItem_Click_3" />
+        </Menu>
+
+        <Grid Grid.Row="1" Name="panelAddNewTask" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <TextBox Grid.Row="0" Name="txtNewTaskURL" Margin="10,0" />
+            <Button Grid.Row="1" Content="網址分析" HorizontalContentAlignment="Center" Margin="10,0,0,0" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" Click="btnAddNewTask_Click" />
+            <Button Grid.Row="1" Name="CloseAddNewPanel" Content="取消" HorizontalContentAlignment="Center" Margin="70,0,0,0" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" Click="CloseAddNewPanel_Click" />
+        </Grid>
+
+        <Grid Grid.Row="2" Name="panelSetComicsDownload" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="預設下載路徑" Margin="10,0,0,0" />
+            <TextBox Grid.Row="1" Name="txtSetDefaultFilePath" HorizontalAlignment="Left" Width="300" Height="25" VerticalAlignment="Top" Margin="10,0,0,0" Text="{Binding DefaultFilePath, Source={StaticResource ComicsDownloadConfig}}" />
+            <Button Grid.Row="1" Width="40" Content="修改" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="320,0,0,0" Click="btnShowFilePathWindow_Click"/>
+
+            <CheckBox Grid.Row="2" Content="開啟時自動重新分析任務" Name="ckbAutoAnalysisTask" IsChecked="{Binding AutoAnalysisTask, Source={StaticResource ComicsDownloadConfig}}" />
+            
+            <Grid Grid.Row="3">
+                <Button Width="40" Content="儲存" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,0,0,0" Click="SetConfig_Click" />
+                <Button Width="40" Content="取消" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="220,0,0,0" Click="btnClosePanelSetComicsDownload_Click" />
+            </Grid>
+        </Grid>
+
+        <ListView Grid.Row="3" VerticalAlignment="Stretch" Name="lvTaskList" IsSynchronizedWithCurrentItem="True" SelectionChanged="lvTaskList_SelectionChanged" BorderBrush="Black">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="60" DisplayMemberBinding="{Binding Path=Status}" Header="狀態" />
+                    <GridViewColumn Width="160" DisplayMemberBinding="{Binding Path=Name}" Header="名稱" />
+                    <GridViewColumn Width="50" DisplayMemberBinding="{Binding Path=Platform}" Header="平台" />
+                    <GridViewColumn Width="75" DisplayMemberBinding="{Binding Path=SectionStart}" Header="目前下載(話)" />
+                    <GridViewColumn Width="75" DisplayMemberBinding="{Binding Path=LastSection}" Header="欲下載(話)" />
+                    <GridViewColumn Width="75" DisplayMemberBinding="{Binding Path=SectionTotal}" Header="全部(話)" />
+                    <GridViewColumn Width="75" DisplayMemberBinding="{Binding Path=PageStart}" Header="目前下載(頁)" />
+                    <GridViewColumn Width="75" DisplayMemberBinding="{Binding Path=LastPage}" Header="欲下載(頁)" />
+                    <GridViewColumn Width="75" DisplayMemberBinding="{Binding Path=PageCount}" Header="全部(頁)" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <Expander Grid.Row="4" ExpandDirection="Up">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Content="名稱"/>
+                <TextBox Grid.Row="0" Name="txtComicsName" Text="{Binding ElementName=lvTaskList,Path=ItemsSource/Name}" Width="auto" Margin="33,0,0,0" />
+
+                <Grid Grid.Row="1">
+                    <Label Content="儲存位置"/>
+                    <TextBox Name="txtFilePath" Text="{Binding ElementName=lvTaskList,Path=ItemsSource/FilePath}" Width="305" Height="25" Margin="55,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <Button Name="btnSelectFilePath" Content="選擇位置" Margin="360,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Click="btnSelectFilePath_Click" />
+                </Grid>
+
+                <TabControl Grid.Row="2" Name="tcDownLoadType" SelectionChanged="tcDownType_SelectionChanged">
+                    <TabItem Header="選擇話數下載" Foreground="#FF000002">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0" Content="總共有"/>
+                                <Label Grid.Column="1" Content="{Binding ElementName=lvTaskList,Path=ItemsSource/SectionTotal}" />
+                                <Label Grid.Column="2" Content="話" />
+                            </Grid>
+
+                            <Grid Grid.Row="1" Grid.ColumnSpan="3" Height="30">
+                                <Label Content="下載" />
+                                <TextBox Name="txtStartSection" Text="{Binding ElementName=lvTaskList,Path=ItemsSource/SectionStart}" Margin="33,2,0,0" HorizontalAlignment="Left" Width="100" Height="25" VerticalAlignment="Top" />
+                                <Label Content="到" Margin="135,0,0,0" HorizontalAlignment="Left" Width="24" Height="30" VerticalAlignment="Top" />
+                                <TextBox Name="txtLastSection" Text="{Binding ElementName=lvTaskList,Path=ItemsSource/LastSection}" Width="100" Height="25" Margin="160,2,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                            </Grid>
+
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem Header="單一話下載">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="23" />
+                                <RowDefinition Height="23" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0" Content="總共有"/>
+                                <Label Grid.Column="1" Content="{Binding ElementName=lvTaskList,Path=ItemsSource/SectionTotal}" />
+                                <Label Grid.Column="2" Content="話" />
+                            </Grid>
+
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="第"/>
+                                <TextBox Grid.Column="1" Width="40" Height="20" Name="txtSelectSection" Text="{Binding ElementName=lvTaskList,Path=ItemsSource/LastSection}"/>
+                                <TextBlock Grid.Column="2" Text="話，有"/>
+                                <TextBlock Grid.Column="3"  Text="{Binding ElementName=lvTaskList,Path=ItemsSource/PageCount}"/>
+                                <TextBlock Grid.Column="4" Text="頁"/>
+                            </Grid>
+
+                            <Grid Grid.Row="2">
+                                <TextBlock Text="下載"/>
+                                <TextBox Name="txtStartPage" Text="{Binding ElementName=lvTaskList,Path=ItemsSource/PageStart}" Margin="25,0,0,0" Width="50" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                                <TextBlock Text="到" Margin="77,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                                <TextBox Name="txtLastPage" Text="{Binding ElementName=lvTaskList,Path=ItemsSource/LastPage}" Margin="90,0,0,0" Width="50" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                            </Grid>
+
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </Expander>
+    </Grid>
+</Window>
